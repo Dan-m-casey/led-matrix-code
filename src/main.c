@@ -1,4 +1,6 @@
 #include "stm32l011xx.h"
+#include "systick.h"
+
 
 typedef struct {
 	GPIO_TypeDef* bank;
@@ -19,21 +21,6 @@ typedef struct {
 #define LD_FEED_BACK	(boardPin_t){GPIOB, 1}
 
 
-/* Systick stuff start */
-
-volatile int MSCount = 0;
-
-void SysTick_Handler(void){
-	MSCount += 10;
-}
-
-void init_systick(void){
-	MSCount = 0;
-	SysTick->LOAD = 0x0004e200;
-	SysTick->CTRL = 0x00000007;
-}
-/* Systick stuff end*/
-
 
 /*Timer stuff start */
 
@@ -44,16 +31,16 @@ typedef struct {
 
 
 int is_timer_expired(timer_t t){
-	return MSCount > t.timestamp_expire;
+	return get_ms_count() > t.timestamp_expire;
 }
 
 void set_timer(timer_t* t, int milliseconds){
 	t->timestamp_set = milliseconds;
-	t->timestamp_expire = MSCount + milliseconds;
+	t->timestamp_expire = get_ms_count() + milliseconds;
 }	
 
 void reset_timer(timer_t* t){
-	t->timestamp_expire = (MSCount + 1000);
+	t->timestamp_expire = (get_ms_count() + t->timestamp_set);
 }
 
 /*Timer stuff end*/

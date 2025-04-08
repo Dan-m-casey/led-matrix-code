@@ -1,0 +1,8 @@
+#ifndef __SYSTICK_H__
+#define __SYSTICK_H__
+
+void init_systick(void);
+
+uint32_t get_ms_count(void);
+
+#endif
