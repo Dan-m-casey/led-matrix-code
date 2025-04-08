@@ -10,7 +10,8 @@ set SOURCES=^
 	src\main.c ^
 	CMSIS\startup_stm32l011xx.S ^
 	CMSIS\system_stm32l0xx.c ^
-	src\systick.c
+	src\systick.c ^
+	src\timers.c
 
 set LINKSCR=CMSIS\ARMCMx.ld
 
