@@ -6,12 +6,16 @@ echo making bin file
 
 set INCLUDES=-I inc\ -I CMSIS\
 
+rem the carat ^ is for continuing a new line 
+  
 set SOURCES=^
 	src\main.c ^
 	CMSIS\startup_stm32l011xx.S ^
 	CMSIS\system_stm32l0xx.c ^
 	src\systick.c ^
-	src\timers.c
+	src\timers.c ^
+	src\pll.c ^
+	src\gpio.c
 
 set LINKSCR=CMSIS\ARMCMx.ld
 
