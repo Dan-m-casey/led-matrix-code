@@ -1,7 +1,6 @@
 #include "stm32l011xx.h"
 #include "systick.h"
 
-
 typedef struct {
 	GPIO_TypeDef* bank;
 	int pinNum;
@@ -21,29 +20,6 @@ typedef struct {
 #define LD_FEED_BACK	(boardPin_t){GPIOB, 1}
 
 
-
-/*Timer stuff start */
-
-typedef struct {
-	uint32_t timestamp_set;
-	uint32_t timestamp_expire;
-} timer_t;
-
-
-int is_timer_expired(timer_t t){
-	return get_ms_count() > t.timestamp_expire;
-}
-
-void set_timer(timer_t* t, int milliseconds){
-	t->timestamp_set = milliseconds;
-	t->timestamp_expire = get_ms_count() + milliseconds;
-}	
-
-void reset_timer(timer_t* t){
-	t->timestamp_expire = (get_ms_count() + t->timestamp_set);
-}
-
-/*Timer stuff end*/
 
 /* PLL stuff start */
 void init_pll(void){
