@@ -14,6 +14,7 @@ int main(void)
 
     init_pll();
     init_systick();
+    init_tim2();
 
     RCC->IOPENR |= RCC_IOPENR_GPIOAEN;
     RCC->IOPENR |= RCC_IOPENR_GPIOBEN;
@@ -35,15 +36,7 @@ int main(void)
         if (is_timer_expired(blink_timer))
         {
             reset_timer(&blink_timer);
-
-            if (get_pin_state(BOARD_LED))
-            {
-                set_pin_state(BOARD_LED, 0);
-            }
-            else
-            {
-                set_pin_state(BOARD_LED, 1);
-            }
+            set_pin_state(BOARD_LED, !get_pin_state(BOARD_LED));
         }
     }
 }

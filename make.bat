@@ -3,7 +3,7 @@
 rem When using windows this batch file will act as a simulated make file.  
 
 echo making bin file
-
+echo %time%
 set INCLUDES=-I inc\ -I CMSIS\
 
 rem the carat ^ is for continuing a new line 

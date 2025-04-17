@@ -17,7 +17,7 @@ typedef struct
 	boardPin_t clock;
 	boardPin_t data;
 	boardPin_t latch;
-	boardPin_t outEnable;
+	boardPin_t outEnable_n;
 	boardPin_t feedback;
 } shiftreg_t;
 
@@ -53,34 +53,63 @@ void init_led_matrix(void)
 	set_pin_state(SR_RESET_n, 1);
 }
 
-void set_shift_reg(uint8_t byte, shiftreg_t sr)
-{
-	set_pin_state(sr.latch, 0);
+uint16_t DELAY_us = 20;
 
+void load_shift_reg(uint8_t byte, shiftreg_t sr)
+{
 	for (int i = 0; i < 8; i++)
 	{
 		set_pin_state(sr.clock, 0);
 		set_pin_state(sr.data, ((byte >> i) & 1));
-		systick_delay(20);
+		timer_delay(DELAY_us);
 		set_pin_state(sr.clock, 1);
-		systick_delay(20);
+		timer_delay(DELAY_us);
 	}
-	set_pin_state(sr.latch, 1);
+}
+
+uint8_t matrix[8] = {
+	0b10000000,
+	0b10000000,
+	0b11111111,
+	0b10000000,
+	0b10000000,
+	0b10000000,
+	0b10000000,
+	0b10000000,
+};
+
+void load_matrix(uint8_t m[])
+{
+
+	for (int i = 0; i < 8; i++)
+	{
+		set_pin_state(LedDriver.latch, 0);
+		set_pin_state(ShiftReg.latch, 0);
+
+		load_shift_reg(1 << i, ShiftReg);
+		load_shift_reg(m[i], LedDriver);
+
+		set_pin_state(LedDriver.outEnable_n, 1);
+		set_pin_state(ShiftReg.outEnable_n, 1);
+
+		// timer_delay(DELAY_us);
+		// timer_delay(500);
+		// systick_delay(1000);
+		set_pin_state(ShiftReg.latch, 1);
+		set_pin_state(LedDriver.latch, 1);
+
+		set_pin_state(LedDriver.outEnable_n, 0);
+		set_pin_state(ShiftReg.outEnable_n, 0);
+	}
 }
 
 void test(int on)
 {
-	set_shift_reg(on, LedDriver);
-	set_shift_reg(on, ShiftReg);
+	load_matrix(matrix);
 }
 
 int ledOn = 1;
 void blinky(timer_t *t)
 {
-	if (is_timer_expired(*t))
-	{
-		reset_timer(t);
-		ledOn = !ledOn;
-		test(ledOn);
-	}
+	test(1);
 }
