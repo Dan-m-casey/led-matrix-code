@@ -9,7 +9,7 @@ int main(void)
 {
     timer_t blink_timer = {0};
     timer_t sr_timer = {0};
-    set_timer(&blink_timer, 1000);
+    set_timer(&blink_timer, 250);
     set_timer(&sr_timer, 1000);
 
     init_pll();
@@ -37,6 +37,7 @@ int main(void)
         {
             reset_timer(&blink_timer);
             set_pin_state(BOARD_LED, !get_pin_state(BOARD_LED));
+            update_matrix();
         }
     }
 }

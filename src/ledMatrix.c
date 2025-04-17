@@ -68,15 +68,25 @@ void load_shift_reg(uint8_t byte, shiftreg_t sr)
 }
 
 uint8_t matrix[8] = {
-	0b10000000,
-	0b10000000,
-	0b11111111,
-	0b10000000,
-	0b10000000,
-	0b10000000,
-	0b10000000,
-	0b10000000,
+	0b00011000,
+	0b00100100,
+	0b01000010,
+	0b10000001,
+	0b10000001,
+	0b01000010,
+	0b00100100,
+	0b00011000,
 };
+
+void update_matrix(void)
+{
+	uint8_t tmp = matrix[0];
+	for (int i = 0; i < 7; i++)
+	{
+		matrix[i] = matrix[i + 1];
+	}
+	matrix[7] = tmp;
+}
 
 void load_matrix(uint8_t m[])
 {
