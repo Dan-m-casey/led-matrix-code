@@ -3,16 +3,27 @@
 
 volatile uint32_t MSCount = 0;
 
-void SysTick_Handler(void){
+void SysTick_Handler(void)
+{
 	MSCount += 10;
 }
 
-uint32_t get_ms_count(void){
+uint32_t get_ms_count(void)
+{
 	return MSCount;
 }
 
-void init_systick(void){
+void init_systick(void)
+{
 	MSCount = 0;
 	SysTick->LOAD = 0x0004e200;
 	SysTick->CTRL = 0x00000007;
+}
+
+/*Blocking delay*/
+void systick_delay(int ms)
+{
+	int delay = get_ms_count() + ms;
+	while (delay > get_ms_count())
+		;
 }

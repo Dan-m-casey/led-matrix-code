@@ -15,7 +15,8 @@ set SOURCES=^
 	src\systick.c ^
 	src\timers.c ^
 	src\pll.c ^
-	src\gpio.c
+	src\gpio.c ^
+	src\ledMatrix.c
 
 set LINKSCR=CMSIS\ARMCMx.ld
 
