@@ -7,8 +7,14 @@ SOURCES = \
     $(CMSIS)/startup_stm32l011xx.S \
     $(CMSIS)/system_stm32l0xx.c\
     $(SRC)/main.c\
+    $(SRC)/systick.c\
+    $(SRC)/ledMatrix.c\
+    $(SRC)/timers.c\
+    $(SRC)/gpio.c\
+    $(SRC)/pll.c\
 
-LDSCR = $(CMSIS)/ARMCMx.ld 
+
+LDSCR = $(CMSIS)/ARMCMx.ld
 
 PREFIX = arm-none-eabi-
 CC = $(PREFIX)gcc
@@ -28,7 +34,7 @@ $(APPNAME).bin: $(APPNAME).elf
 $(APPNAME).dmp: $(APPNAME).elf
 	$(PREFIX)objdump --disassemble-all $(APPNAME).elf > $(APPNAME).dmp
 
-.PHONY: clean 
+.PHONY: clean
 
 clean:
 	rm $(APPNAME).elf $(APPNAME).hex $(APPNAME).dmp *.bin *.i
