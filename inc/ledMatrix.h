@@ -21,5 +21,6 @@
 extern void init_led_matrix(void);
 extern void blinky(timer_t *t);
 extern void update_matrix(void);
+extern void load_matrix(uint8_t byte[]);
 
 #endif

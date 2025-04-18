@@ -5,12 +5,46 @@
 #include "systick.h"
 #include "timers.h"
 
+uint8_t test_matrix[] = {
+	0b00011000,
+	0b00100100,
+	0b01000010,
+	0b10000001,
+	0b10000001,
+	0b01000010,
+	0b00100100,
+	0b00011000,
+	0b00000000,
+
+};
+
+void update_matrix(void)
+{
+	uint8_t tmp = test_matrix[0];
+	for (int i = 0; i < 7; i++)
+	{
+	    test_matrix[i] = test_matrix[i + 1];
+	}
+	test_matrix[7] = tmp;
+}
+
+
 int main(void)
 {
     timer_t blink_timer = {0};
-    timer_t sr_timer = {0};
-    set_timer(&blink_timer, 250);
-    set_timer(&sr_timer, 1000);
+    timer_t update_matrix_timer = {0};
+    timer_t load_matrix_timer = {0};
+
+    set_timer(&blink_timer, 1000);
+
+    //TODO calc refresh rate
+    //@60hz
+    //16ms = 1/60
+    //TODO update timer for us
+    //won't be accurate
+    set_timer(&load_matrix_timer, 16);
+
+    set_timer(&update_matrix_timer, 100);
 
     init_pll();
     init_systick();
@@ -31,13 +65,24 @@ int main(void)
     init_led_matrix();
     while (1)
     {
-        blinky(&sr_timer);
+        //This is writing the data matix out to the hardware led matrix
+        if(is_timer_expired(load_matrix_timer)){
+            reset_timer(&load_matrix_timer);
+            load_matrix(test_matrix);
+        }
 
+
+        //this updates the data matrix
+        if (is_timer_expired(update_matrix_timer)){
+            reset_timer(&update_matrix_timer);
+            update_matrix();
+        }
+
+        //this is on board led - neucleo
         if (is_timer_expired(blink_timer))
         {
             reset_timer(&blink_timer);
             set_pin_state(BOARD_LED, !get_pin_state(BOARD_LED));
-            update_matrix();
         }
     }
 }

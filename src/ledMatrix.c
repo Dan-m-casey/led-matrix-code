@@ -53,73 +53,60 @@ void init_led_matrix(void)
 	set_pin_state(SR_RESET_n, 1);
 }
 
+
+//TODO: should this be a calucated number
 uint16_t DELAY_us = 20;
 
+
+
+/* 20us per delay
+ *
+ * 40us per bit
+ *
+ * 8*40us = 320us per byte
+ * 320us * 9 = 2880us  or 2.8ms
+ * each frame is on for 2.8ms at full speed
+ *
+ *
+ *
+ * */
+//byte level
 void load_shift_reg(uint8_t byte, shiftreg_t sr)
 {
-	for (int i = 0; i < 8; i++)
-	{
-		set_pin_state(sr.clock, 0);
-		set_pin_state(sr.data, ((byte >> i) & 1));
-		timer_delay(DELAY_us);
-		set_pin_state(sr.clock, 1);
-		timer_delay(DELAY_us);
-	}
+    for (int i = 0; i < 8; i++)
+    {
+        //set clock low
+        set_pin_state(sr.clock, 0);
+        //set data
+        set_pin_state(sr.data, ((byte >> i) & 1));
+        //pre delay
+        timer_delay(DELAY_us);
+        //set clock high
+        set_pin_state(sr.clock, 1);
+        //post delay
+        timer_delay(DELAY_us);
+    }
 }
 
-uint8_t matrix[8] = {
-	0b00011000,
-	0b00100100,
-	0b01000010,
-	0b10000001,
-	0b10000001,
-	0b01000010,
-	0b00100100,
-	0b00011000,
-};
-
-void update_matrix(void)
-{
-	uint8_t tmp = matrix[0];
-	for (int i = 0; i < 7; i++)
-	{
-		matrix[i] = matrix[i + 1];
-	}
-	matrix[7] = tmp;
-}
 
 void load_matrix(uint8_t m[])
 {
 
-	for (int i = 0; i < 8; i++)
-	{
-		set_pin_state(LedDriver.latch, 0);
-		set_pin_state(ShiftReg.latch, 0);
+    for (int i = 0; i < 9; i++)
+    {
+        //Latch down
+        set_pin_state(LedDriver.latch, 0);
+        set_pin_state(ShiftReg.latch, 0);
 
-		load_shift_reg(1 << i, ShiftReg);
-		load_shift_reg(m[i], LedDriver);
 
-		set_pin_state(LedDriver.outEnable_n, 1);
-		set_pin_state(ShiftReg.outEnable_n, 1);
+        //this could be made more efficient by doing both at the same time
+        //set data line
+        load_shift_reg(1 << i, ShiftReg);
+        load_shift_reg(m[i], LedDriver);
 
-		// timer_delay(DELAY_us);
-		// timer_delay(500);
-		// systick_delay(1000);
-		set_pin_state(ShiftReg.latch, 1);
-		set_pin_state(LedDriver.latch, 1);
-
-		set_pin_state(LedDriver.outEnable_n, 0);
-		set_pin_state(ShiftReg.outEnable_n, 0);
-	}
+        //Latch up
+        set_pin_state(ShiftReg.latch, 1);
+        set_pin_state(LedDriver.latch, 1);
+    }
 }
 
-void test(int on)
-{
-	load_matrix(matrix);
-}
-
-int ledOn = 1;
-void blinky(timer_t *t)
-{
-	test(1);
-}

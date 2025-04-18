@@ -22,14 +22,15 @@ AS = $(PREFIX)as
 
 CDEF = -nostartfiles -DSTM32L011xx -I $(CMSIS) -I $(INC) -T $(LDSCR) -mcpu=cortex-m0plus
 
+
+$(APPNAME).bin: $(APPNAME).elf
+	arm-none-eabi-objcopy -O binary $(APPNAME).elf $(APPNAME).bin
+
 $(APPNAME).elf: $(SOURCES)
 	$(CC) $(CDEF) $(SOURCES) -Wall -o $(APPNAME).elf
 
 $(APPNAME).hex: $(APPNAME).elf
 	arm-none-eabi-objcopy -O ihex $(APPNAME).elf $(APPNAME).hex
-
-$(APPNAME).bin: $(APPNAME).elf
-	arm-none-eabi-objcopy -O binary $(APPNAME).elf $(APPNAME).bin
 
 $(APPNAME).dmp: $(APPNAME).elf
 	$(PREFIX)objdump --disassemble-all $(APPNAME).elf > $(APPNAME).dmp
